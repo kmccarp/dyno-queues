@@ -39,7 +39,7 @@ public class DynoJedisTests extends BaseQueueTests {
 
     private static String messageKeyPrefix;
 
-    private static int maxHashBuckets = 32;
+    private static final int maxHashBuckets = 32;
 
     public DynoJedisTests() {
         super("dyno_queue_tests");
@@ -64,12 +64,7 @@ public class DynoJedisTests extends BaseQueueTests {
         QueueBuilder qb = new QueueBuilder();
 
         DynoJedisClient.Builder builder = new DynoJedisClient.Builder();
-        HostSupplier hs = new HostSupplier() {
-            @Override
-            public List<Host> getHosts() {
-                return hosts;
-            }
-        };
+        HostSupplier hs = () -> hosts;
 
         ConnectionPoolConfigurationImpl cp = new ConnectionPoolConfigurationImpl("test").withTokenSupplier(new TokenMapSupplier() {
 
