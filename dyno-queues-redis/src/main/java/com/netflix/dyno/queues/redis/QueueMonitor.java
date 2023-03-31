@@ -62,11 +62,11 @@ public class QueueMonitor implements Closeable {
 
     public StatsMonitor prefetch;
 
-    private String queueName;
+    private final String queueName;
 
-    private String shardName;
+    private final String shardName;
 
-    private ScheduledExecutorService executor;
+    private final ScheduledExecutorService executor;
 
     private static final String className = QueueMonitor.class.getSimpleName();
 

@@ -66,20 +66,17 @@ public class RedisDynoQueueTest {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
 
-        HostSupplier hs = new HostSupplier() {
-            @Override
-            public List<Host> getHosts() {
-                List<Host> hosts = new LinkedList<>();
-                hosts.add(
-                        new HostBuilder()
-                                .setHostname("ec2-11-22-33-444.compute-0.amazonaws.com")
-                                .setPort(8102)
-                                .setRack("us-east-1d")
-                                .setStatus(Host.Status.Up)
-                                .createHost()
-                );
-                return hosts;
-            }
+        HostSupplier hs = () -> {
+            List<Host> hosts = new LinkedList<>();
+            hosts.add(
+                    new HostBuilder()
+                            .setHostname("ec2-11-22-33-444.compute-0.amazonaws.com")
+                            .setPort(8102)
+                            .setRack("us-east-1d")
+                            .setStatus(Host.Status.Up)
+                            .createHost()
+            );
+            return hosts;
         };
 
         dynoClient = new JedisMock();
@@ -193,25 +190,21 @@ public class RedisDynoQueueTest {
 
         ScheduledExecutorService ses = Executors.newScheduledThreadPool(6);
         CountDownLatch publishLatch = new CountDownLatch(1);
-        Runnable publisher = new Runnable() {
-
-            @Override
-            public void run() {
-                List<Message> messages = new LinkedList<>();
-                for (int i = 0; i < 10; i++) {
-                    Message msg = new Message(UUID.randomUUID().toString(), "Hello World-" + i);
-                    msg.setPriority(new Random().nextInt(98));
-                    messages.add(msg);
-                }
-                if (published.get() >= count) {
-                    publishLatch.countDown();
-                    return;
-                }
-
-                published.addAndGet(messages.size());
-                rdq.push(messages);
-
+        Runnable publisher = () -> {
+            List<Message> messages = new LinkedList<>();
+            for (int i = 0;i < 10;i++) {
+                Message msg = new Message(UUID.randomUUID().toString(), "Hello World-" + i);
+                msg.setPriority(new Random().nextInt(98));
+                messages.add(msg);
             }
+            if (published.get() >= count) {
+                publishLatch.countDown();
+                return;
+            }
+
+            published.addAndGet(messages.size());
+            rdq.push(messages);
+
         };
 
         for (int p = 0; p < 3; p++) {
@@ -222,19 +215,15 @@ public class RedisDynoQueueTest {
         List<Message> allMsgs = new CopyOnWriteArrayList<>();
         AtomicInteger consumed = new AtomicInteger(0);
         AtomicInteger counter = new AtomicInteger(0);
-        Runnable consumer = new Runnable() {
-
-            @Override
-            public void run() {
-                if (consumed.get() >= count) {
-                    return;
-                }
-                List<Message> popped = rdq.pop(100, 1, TimeUnit.MILLISECONDS);
-                allMsgs.addAll(popped);
-                consumed.addAndGet(popped.size());
-                popped.stream().forEach(p -> latch.countDown());
-                counter.incrementAndGet();
+        Runnable consumer = () -> {
+            if (consumed.get() >= count) {
+                return;
             }
+            List<Message> popped = rdq.pop(100, 1, TimeUnit.MILLISECONDS);
+            allMsgs.addAll(popped);
+            consumed.addAndGet(popped.size());
+            popped.stream().forEach(p -> latch.countDown());
+            counter.incrementAndGet();
         };
 
         for (int c = 0; c < 2; c++) {
@@ -329,7 +318,7 @@ public class RedisDynoQueueTest {
         assertNotNull(messages3);
         assertEquals(10, messages3.size());
         assertEquals(messages, messages3);
-        assertEquals(10, messages3.stream().map(msg -> msg.getId()).collect(Collectors.toSet()).size());
+        assertEquals(10, messages3.stream().map(Message::getId).collect(Collectors.toSet()).size());
         messages3.stream().forEach(System.out::println);
         assertTrue(dynoClient.hlen(messageKey) == 10);
 

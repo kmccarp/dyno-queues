@@ -55,36 +55,33 @@ public class DefaultShardingStrategyTest {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
 
-        HostSupplier hs = new HostSupplier() {
-            @Override
-            public List<Host> getHosts() {
-                List<Host> hosts = new LinkedList<>();
-                hosts.add(
-                        new HostBuilder()
-                                .setHostname("localhost")
-                                .setPort(8102)
-                                .setRack("us-east-1d")
-                                .setStatus(Host.Status.Up)
-                                .createHost()
-                );
-                hosts.add(
-                        new HostBuilder()
-                                .setHostname("localhost")
-                                .setPort(8102)
-                                .setRack("us-east-2d")
-                                .setStatus(Host.Status.Up)
-                                .createHost()
-                );
-                hosts.add(
-                        new HostBuilder()
-                                .setHostname("localhost")
-                                .setPort(8102)
-                                .setRack("us-east-3d")
-                                .setStatus(Host.Status.Up)
-                                .createHost()
-                );
-                return hosts;
-            }
+        HostSupplier hs = () -> {
+            List<Host> hosts = new LinkedList<>();
+            hosts.add(
+                    new HostBuilder()
+                            .setHostname("localhost")
+                            .setPort(8102)
+                            .setRack("us-east-1d")
+                            .setStatus(Host.Status.Up)
+                            .createHost()
+            );
+            hosts.add(
+                    new HostBuilder()
+                            .setHostname("localhost")
+                            .setPort(8102)
+                            .setRack("us-east-2d")
+                            .setStatus(Host.Status.Up)
+                            .createHost()
+            );
+            hosts.add(
+                    new HostBuilder()
+                            .setHostname("localhost")
+                            .setPort(8102)
+                            .setRack("us-east-3d")
+                            .setStatus(Host.Status.Up)
+                            .createHost()
+            );
+            return hosts;
         };
 
         dynoClient = new JedisMock();

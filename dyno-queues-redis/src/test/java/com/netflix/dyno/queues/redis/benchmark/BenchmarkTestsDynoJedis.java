@@ -12,7 +12,10 @@ import com.netflix.dyno.connectionpool.impl.lb.HostToken;
 import com.netflix.dyno.jedis.DynoJedisClient;
 import com.netflix.dyno.queues.redis.v2.QueueBuilder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Viren
@@ -37,12 +40,7 @@ public class BenchmarkTestsDynoJedis extends QueueBenchmark {
         QueueBuilder qb = new QueueBuilder();
 
         DynoJedisClient.Builder builder = new DynoJedisClient.Builder();
-        HostSupplier hs = new HostSupplier() {
-            @Override
-            public List<Host> getHosts() {
-                return hosts;
-            }
-        };
+        HostSupplier hs = () -> hosts;
 
         ConnectionPoolConfigurationImpl cp = new ConnectionPoolConfigurationImpl("test").withTokenSupplier(new TokenMapSupplier() {
 
