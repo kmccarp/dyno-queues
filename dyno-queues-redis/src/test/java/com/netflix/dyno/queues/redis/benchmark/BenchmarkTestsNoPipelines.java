@@ -43,12 +43,7 @@ public class BenchmarkTestsNoPipelines extends QueueBenchmark {
         );
 
         DynoJedisClient.Builder builder = new DynoJedisClient.Builder();
-        HostSupplier hs = new HostSupplier() {
-            @Override
-            public List<Host> getHosts() {
-                return hosts;
-            }
-        };
+        HostSupplier hs = () -> hosts;
 
         ConnectionPoolConfigurationImpl cp = new ConnectionPoolConfigurationImpl("test").withTokenSupplier(new TokenMapSupplier() {
 

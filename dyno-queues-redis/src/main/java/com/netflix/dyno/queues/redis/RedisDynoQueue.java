@@ -131,9 +131,9 @@ public class RedisDynoQueue implements DynoQueue {
         schedulerForUnacksProcessing = Executors.newScheduledThreadPool(1);
 
         if (this.singleRingTopology) {
-            schedulerForUnacksProcessing.scheduleAtFixedRate(() -> atomicProcessUnacks(), unackScheduleInMS, unackScheduleInMS, TimeUnit.MILLISECONDS);
+            schedulerForUnacksProcessing.scheduleAtFixedRate(this::atomicProcessUnacks, unackScheduleInMS, unackScheduleInMS, TimeUnit.MILLISECONDS);
         } else {
-            schedulerForUnacksProcessing.scheduleAtFixedRate(() -> processUnacks(), unackScheduleInMS, unackScheduleInMS, TimeUnit.MILLISECONDS);
+            schedulerForUnacksProcessing.scheduleAtFixedRate(this::processUnacks, unackScheduleInMS, unackScheduleInMS, TimeUnit.MILLISECONDS);
         }
 
         logger.info(RedisDynoQueue.class.getName() + " is ready to serve " + queueName);
@@ -194,7 +194,7 @@ public class RedisDynoQueue implements DynoQueue {
                 return messages;
             });
 
-            return messages.stream().map(msg -> msg.getId()).collect(Collectors.toList());
+            return messages.stream().map(Message::getId).collect(Collectors.toList());
 
         } finally {
             sw.stop();
@@ -279,12 +279,16 @@ public class RedisDynoQueue implements DynoQueue {
             for (String shard : allShards) {
                 String queueShardName = getQueueShardKey(queueName, shard);
                 // Skip 'localQueueShard'.
-                if (queueShardName.equals(localQueueShard)) continue;
+                if (queueShardName.equals(localQueueShard)) {
+                    continue;
+                }
 
                 Set<String> elems = doPeekIdsFromShardHelper(queueShardName, now, offset, count);
                 scanned.addAll(elems);
                 remaining_count -= elems.size();
-                if (remaining_count <= 0) break;
+                if (remaining_count <= 0) {
+                    break;
+                }
             }
 
             return scanned;
@@ -306,8 +310,9 @@ public class RedisDynoQueue implements DynoQueue {
      *
      */
     private List<Message> doPeekBodyHelper(Set<String> message_ids) {
-        List<Message> msgs = execute("peek", messageStoreKey, () -> {
-            List<Message> messages = new LinkedList<Message>();
+
+        return execute("peek", messageStoreKey, () -> {
+            List<Message> messages = new LinkedList<>();
             for (String id : message_ids) {
                 String json = nonQuorumConn.hget(messageStoreKey, id);
                 Message message = om.readValue(json, Message.class);
@@ -315,8 +320,6 @@ public class RedisDynoQueue implements DynoQueue {
             }
             return messages;
         });
-
-        return msgs;
     }
 
     @Override
@@ -368,10 +371,14 @@ public class RedisDynoQueue implements DynoQueue {
             // Only one of the shards will have the message, so we don't want the check in the other 2 shards
             // to spam the logs. So make sure only the last shard emits a warning log which means that none of the
             // shards have 'messageId'.
-            if (--numShards == 0) warnIfNotExists = true;
+            if (--numShards == 0) {
+                warnIfNotExists = true;
+            }
 
             Message msg = popWithMsgIdHelper(messageId, shard, warnIfNotExists);
-            if (msg != null) return msg;
+            if (msg != null) {
+                return msg;
+            }
         }
         return null;
     }
@@ -423,9 +430,7 @@ public class RedisDynoQueue implements DynoQueue {
                     monitor.misses.increment();
                     return null;
                 }
-
-                Message msg = om.readValue(json, Message.class);
-                return msg;
+                return om.readValue(json, Message.class);
             });
         } finally {
             sw.stop();
@@ -493,11 +498,15 @@ public class RedisDynoQueue implements DynoQueue {
         doPrefetchIdsHelper(localQueueShard, unsafeNumIdsToPrefetchAllShards,
                 unsafePrefetchedIdsAllShardsMap.get(localQueueShard), now);
 
-        if (unsafeNumIdsToPrefetchAllShards.get() < 1) return;
+        if (unsafeNumIdsToPrefetchAllShards.get() < 1) {
+            return;
+        }
 
         for (String shard : allShards) {
             String queueShardName = getQueueShardKey(queueName, shard);
-            if (queueShardName.equals(localQueueShard)) continue; // Skip since we've already serviced the local shard.
+            if (queueShardName.equals(localQueueShard)) {
+                continue;
+            } // Skip since we've already serviced the local shard.
 
             doPrefetchIdsHelper(queueShardName, unsafeNumIdsToPrefetchAllShards,
                     unsafePrefetchedIdsAllShardsMap.get(queueShardName), now);
@@ -555,7 +564,7 @@ public class RedisDynoQueue implements DynoQueue {
         ZAddParams zParams = ZAddParams.zAddParams().nx();
 
         List<Message> popped = new LinkedList<>();
-        for (;popped.size() != messageCount;) {
+        while (popped.size() != messageCount) {
             String msgId = prefetchedIdQueue.poll();
             if(msgId == null) {
                 break;
@@ -755,7 +764,9 @@ public class RedisDynoQueue implements DynoQueue {
                 }
 
                 Long removed = (Long) ((DynoJedisClient)quorumConn).eval(atomicRemoveScript, Collections.singletonList(messageStoreKey), builder.build());
-                if (removed == 1) return true;
+                if (removed == 1) {
+                    return true;
+                }
 
                 return false;
 
@@ -986,7 +997,9 @@ public class RedisDynoQueue implements DynoQueue {
                     Collections.singletonList(messageStoreKey), builder.build());
         }
 
-        if (retval.size() == 0) return null;
+        if (retval.isEmpty()) {
+            return null;
+        }
         return new Message(retval.get(0), retval.get(1));
 
     }
@@ -996,8 +1009,7 @@ public class RedisDynoQueue implements DynoQueue {
         Stopwatch sw = monitor.start(monitor.pop, 1);
 
         try {
-            Message payload = execute("popMsgWithPredicateObeyPriority", messageStoreKey, () -> popMsgWithPredicateObeyPriority(predicate, localShardOnly));
-            return payload;
+            return execute("popMsgWithPredicateObeyPriority", messageStoreKey, () -> popMsgWithPredicateObeyPriority(predicate, localShardOnly));
 
         } finally {
             sw.stop();
@@ -1060,9 +1072,13 @@ public class RedisDynoQueue implements DynoQueue {
                 int prefetchedIdsSize = unsafePrefetchedIdsAllShardsMap.get(queueShardName).size();
                 for (int i = 0; i < prefetchedIdsSize; ++i) {
                     messageIds.add(unsafePrefetchedIdsAllShardsMap.get(queueShardName).poll());
-                    if (++numPrefetched == numToPop) break;
+                    if (++numPrefetched == numToPop) {
+                        break;
+                    }
                 }
-                if (numPrefetched == numToPop) break;
+                if (numPrefetched == numToPop) {
+                    break;
+                }
             }
             return atomicBulkPopHelper(numToPop, messageIds, false);
         } catch(Exception e) {
@@ -1300,9 +1316,7 @@ public class RedisDynoQueue implements DynoQueue {
                     logger.warn("Cannot get the message payload " + messageId);
                     return null;
                 }
-
-                Message msg = om.readValue(json, Message.class);
-                return msg;
+                return om.readValue(json, Message.class);
             });
 
         } finally {
@@ -1335,9 +1349,7 @@ public class RedisDynoQueue implements DynoQueue {
                     logger.warn("Cannot get the message payload " + messageId);
                     return null;
                 }
-
-                Message msg = om.readValue(json, Message.class);
-                return msg;
+                return om.readValue(json, Message.class);
             });
 
         } finally {
@@ -1421,12 +1433,12 @@ public class RedisDynoQueue implements DynoQueue {
                 String unackShardName = getUnackKey(queueName, shardName);
 
                 double now = Long.valueOf(clock.millis()).doubleValue();
-                int num_moved_back = 0;
-                int num_stale = 0;
+                int numMovedBack = 0;
+                int numStale = 0;
 
                 Set<Tuple> unacks = nonQuorumConn.zrangeByScoreWithScores(unackShardName, 0, now, 0, batchSize);
 
-                if (unacks.size() > 0) {
+                if (!unacks.isEmpty()) {
                     logger.info("processUnacks: Attempting to add " + unacks.size() + " messages back to shard of queue: " + unackShardName);
                 }
 
@@ -1438,17 +1450,19 @@ public class RedisDynoQueue implements DynoQueue {
                     String payload = quorumConn.hget(messageStoreKey, member);
                     if (payload == null) {
                         quorumConn.zrem(unackShardName, member);
-                        ++num_stale;
+                        ++numStale;
                         continue;
                     }
 
-                    long added_back = quorumConn.zadd(localQueueShard, score, member);
-                    long removed_from_unack = quorumConn.zrem(unackShardName, member);
-                    if (added_back > 0 && removed_from_unack > 0) ++num_moved_back;
+                    long addedBack = quorumConn.zadd(localQueueShard, score, member);
+                    long removedFromUnack = quorumConn.zrem(unackShardName, member);
+                    if (addedBack > 0 && removedFromUnack > 0) {
+                        ++numMovedBack;
+                    }
                 }
 
-                if (num_moved_back > 0 || num_stale > 0) {
-                    logger.info("processUnacks: Moved back " + num_moved_back + " items. Got rid of " + num_stale + " stale items.");
+                if (numMovedBack > 0 || numStale > 0) {
+                    logger.info("processUnacks: Moved back " + numMovedBack + " items. Got rid of " + numStale + " stale items.");
                 }
                 return null;
             });
@@ -1465,7 +1479,7 @@ public class RedisDynoQueue implements DynoQueue {
     public List<Message> findStaleMessages() {
         return execute("findStaleMessages", localQueueShard, () -> {
 
-            List<Message> stale_msgs = new ArrayList<>();
+            List<Message> staleMsgs = new ArrayList<>();
 
             int batchSize = 10;
 
@@ -1476,7 +1490,7 @@ public class RedisDynoQueue implements DynoQueue {
                 String queueShardName = getQueueShardKey(queueName, shard);
                 Set<String> elems = nonQuorumConn.zrangeByScore(queueShardName, 0, now, 0, batchSize);
 
-                if (elems.size() == 0) {
+                if (elems.isEmpty()) {
                     continue;
                 }
 
@@ -1512,20 +1526,20 @@ public class RedisDynoQueue implements DynoQueue {
                     builder.add(msg);
                 }
 
-                ArrayList<String> stale_msg_ids = (ArrayList) ((DynoJedisClient)quorumConn).eval(findStaleMsgsScript, Collections.singletonList(messageStoreKey), builder.build());
-                num_stale = stale_msg_ids.size();
+                ArrayList<String> staleMsgIds = (ArrayList) ((DynoJedisClient)quorumConn).eval(findStaleMsgsScript, Collections.singletonList(messageStoreKey), builder.build());
+                num_stale = staleMsgIds.size();
                 if (num_stale > 0) {
                     logger.info("findStaleMsgs(): Found " + num_stale + " messages present in queue but not in hashmap");
                 }
 
-                for (String m : stale_msg_ids) {
+                for (String m : staleMsgIds) {
                     Message msg = new Message();
                     msg.setId(m);
-                    stale_msgs.add(msg);
+                    staleMsgs.add(msg);
                 }
             }
 
-            return stale_msgs;
+            return staleMsgs;
         });
     }
 
@@ -1551,7 +1565,7 @@ public class RedisDynoQueue implements DynoQueue {
 
                 Set<Tuple> unacks = nonQuorumConn.zrangeByScoreWithScores(unackShardName, 0, now, 0, batchSize);
 
-                if (unacks.size() > 0) {
+                if (!unacks.isEmpty()) {
                     logger.info("processUnacks: Attempting to add " + unacks.size() + " messages back to shard of queue: " + unackShardName);
                 } else {
                     return null;
