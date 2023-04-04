@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -44,38 +43,35 @@ public class DynoShardSupplierTest {
 
 	@Test
 	public void test(){
-		HostSupplier hs = new HostSupplier() {
-			@Override
-			public List<Host> getHosts() {
-				List<Host> hosts = new LinkedList<>();
-				hosts.add(
-						new HostBuilder()
-								.setHostname("host1")
-								.setPort(8102)
-								.setRack("us-east-1a")
-								.setStatus(Host.Status.Up)
-								.createHost()
-				);
-				hosts.add(
-						new HostBuilder()
-								.setHostname("host1")
-								.setPort(8102)
-								.setRack("us-east-1b")
-								.setStatus(Host.Status.Up)
-								.createHost()
-				);
-				hosts.add(
-						new HostBuilder()
-								.setHostname("host1")
-								.setPort(8102)
-								.setRack("us-east-1d")
-								.setStatus(Host.Status.Up)
-								.createHost()
-				);
-				
-				return hosts;
-			}
-		};
+		HostSupplier hs = () -> {
+            List<Host> hosts = new LinkedList<>();
+            hosts.add(
+                    new HostBuilder()
+                            .setHostname("host1")
+                            .setPort(8102)
+                            .setRack("us-east-1a")
+                            .setStatus(Host.Status.Up)
+                            .createHost()
+            );
+            hosts.add(
+                    new HostBuilder()
+                            .setHostname("host1")
+                            .setPort(8102)
+                            .setRack("us-east-1b")
+                            .setStatus(Host.Status.Up)
+                            .createHost()
+            );
+            hosts.add(
+                    new HostBuilder()
+                            .setHostname("host1")
+                            .setPort(8102)
+                            .setRack("us-east-1d")
+                            .setStatus(Host.Status.Up)
+                            .createHost()
+            );
+
+            return hosts;
+        };
 		DynoShardSupplier supplier = new DynoShardSupplier(hs, "us-east-1", "a");
 		String localShard = supplier.getCurrentShard();
 		Set<String> allShards = supplier.getQueueShards();
