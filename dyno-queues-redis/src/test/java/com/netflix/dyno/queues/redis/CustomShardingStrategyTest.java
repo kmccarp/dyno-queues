@@ -41,7 +41,7 @@ public class CustomShardingStrategyTest {
         @Override
         public String getNextShard(List<String> allShards, Message message) {
             int hashCodeAbs = Math.abs(message.getId().hashCode());
-            int calculatedShard = (hashCodeAbs % allShards.size());
+            int calculatedShard = hashCodeAbs % allShards.size();
             return allShards.get(calculatedShard);
         }
     }
@@ -65,36 +65,33 @@ public class CustomShardingStrategyTest {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
 
-        HostSupplier hs = new HostSupplier() {
-            @Override
-            public List<Host> getHosts() {
-                List<Host> hosts = new LinkedList<>();
-                hosts.add(
-                        new HostBuilder()
-                                .setHostname("localhost")
-                                .setPort(8102)
-                                .setRack("rack1")
-                                .setStatus(Host.Status.Up)
-                                .createHost()
-                );
-                hosts.add(
-                        new HostBuilder()
-                                .setHostname("localhost")
-                                .setPort(8102)
-                                .setRack("rack2")
-                                .setStatus(Host.Status.Up)
-                                .createHost()
-                );
-                hosts.add(
-                        new HostBuilder()
-                                .setHostname("localhost")
-                                .setPort(8102)
-                                .setRack("rack3")
-                                .setStatus(Host.Status.Up)
-                                .createHost()
-                );
-                return hosts;
-            }
+        HostSupplier hs = () -> {
+            List<Host> hosts = new LinkedList<>();
+            hosts.add(
+                    new HostBuilder()
+                            .setHostname("localhost")
+                            .setPort(8102)
+                            .setRack("rack1")
+                            .setStatus(Host.Status.Up)
+                            .createHost()
+            );
+            hosts.add(
+                    new HostBuilder()
+                            .setHostname("localhost")
+                            .setPort(8102)
+                            .setRack("rack2")
+                            .setStatus(Host.Status.Up)
+                            .createHost()
+            );
+            hosts.add(
+                    new HostBuilder()
+                            .setHostname("localhost")
+                            .setPort(8102)
+                            .setRack("rack3")
+                            .setStatus(Host.Status.Up)
+                            .createHost()
+            );
+            return hosts;
         };
 
         dynoClient = new JedisMock();
