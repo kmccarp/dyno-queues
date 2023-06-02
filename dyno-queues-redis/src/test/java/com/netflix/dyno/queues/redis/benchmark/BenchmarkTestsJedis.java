@@ -20,13 +20,13 @@ public class BenchmarkTestsJedis extends QueueBenchmark {
 
     public BenchmarkTestsJedis() {
         List<Host> hosts = new LinkedList<>();
-		hosts.add(
-				new HostBuilder()
-						.setHostname("localhost")
-						.setPort(6379)
-						.setRack("us-east-1a")
-						.createHost()
-		);
+        hosts.add(
+                new HostBuilder()
+                        .setHostname("localhost")
+                        .setPort(6379)
+                        .setRack("us-east-1a")
+                        .createHost()
+        );
 
         QueueBuilder qb = new QueueBuilder();
 

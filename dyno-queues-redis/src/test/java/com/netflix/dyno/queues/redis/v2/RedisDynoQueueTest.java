@@ -164,7 +164,7 @@ public class RedisDynoQueueTest {
             @Override
             public void run() {
                 List<Message> messages = new LinkedList<>();
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0;i < 10;i++) {
                     Message msg = new Message(UUID.randomUUID().toString(), "Hello World-" + i);
                     msg.setPriority(new Random().nextInt(98));
                     messages.add(msg);
@@ -179,7 +179,7 @@ public class RedisDynoQueueTest {
             }
         };
 
-        for (int p = 0; p < 3; p++) {
+        for (int p = 0;p < 3;p++) {
             ses.scheduleWithFixedDelay(publisher, 1, 1, TimeUnit.MILLISECONDS);
         }
         publishLatch.await();
@@ -201,7 +201,7 @@ public class RedisDynoQueueTest {
                 counter.incrementAndGet();
             }
         };
-        for (int c = 0; c < 2; c++) {
+        for (int c = 0;c < 2;c++) {
             ses.scheduleWithFixedDelay(consumer, 1, 10, TimeUnit.MILLISECONDS);
         }
         Uninterruptibles.awaitUninterruptibly(latch);
@@ -244,7 +244,7 @@ public class RedisDynoQueueTest {
 
         int count = 10;
         List<Message> messages = new LinkedList<>();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0;i < count;i++) {
             Message msg = new Message("" + i, "Hello World-" + i);
             msg.setPriority(count - i);
             messages.add(msg);
@@ -291,7 +291,7 @@ public class RedisDynoQueueTest {
         assertEquals(10, messages3.stream().map(msg -> msg.getId()).collect(Collectors.toSet()).size());
         messages3.stream().forEach(System.out::println);
         int bucketCounts = 0;
-        for (int i = 0; i < maxHashBuckets; i++) {
+        for (int i = 0;i < maxHashBuckets;i++) {
             bucketCounts += dynoClient.hlen(messageKeyPrefix + "." + i);
         }
         assertEquals(10, bucketCounts);
@@ -310,7 +310,7 @@ public class RedisDynoQueueTest {
     public void clear() {
         rdq.clear();
         int bucketCounts = 0;
-        for (int i = 0; i < maxHashBuckets; i++) {
+        for (int i = 0;i < maxHashBuckets;i++) {
             bucketCounts += dynoClient.hlen(messageKeyPrefix + "." + i);
         }
         assertEquals(0, bucketCounts);
@@ -321,7 +321,7 @@ public class RedisDynoQueueTest {
         rdq.clear();
         int count = 10;
         List<Message> messages = new LinkedList<>();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0;i < count;i++) {
             Message msg = new Message("x" + i, "Hello World-" + i);
             msg.setPriority(count - i);
             messages.add(msg);

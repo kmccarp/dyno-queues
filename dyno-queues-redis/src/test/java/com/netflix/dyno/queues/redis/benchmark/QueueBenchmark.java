@@ -19,9 +19,9 @@ public abstract class QueueBenchmark {
         long s = System.currentTimeMillis();
         int loopCount = 100;
         int batchSize = 3000;
-        for (int i = 0; i < loopCount; i++) {
+        for (int i = 0;i < loopCount;i++) {
             List<Message> messages = new ArrayList<>(batchSize);
-            for (int k = 0; k < batchSize; k++) {
+            for (int k = 0;k < batchSize;k++) {
                 String id = UUID.randomUUID().toString();
                 Message message = new Message(id, getPayload());
                 messages.add(message);
@@ -41,7 +41,7 @@ public abstract class QueueBenchmark {
             int loopCount = 100;
             int batchSize = 3500;
             int count = 0;
-            for (int i = 0; i < loopCount; i++) {
+            for (int i = 0;i < loopCount;i++) {
                 List<Message> popped = queue.pop(batchSize, 1, TimeUnit.MILLISECONDS);
                 queue.ack(popped);
                 Set<String> poppedIds = popped.stream().map(Message::getId).collect(Collectors.toSet());
@@ -67,7 +67,7 @@ public abstract class QueueBenchmark {
 
     private String getPayload() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0;i < 1;i++) {
             sb.append(UUID.randomUUID().toString());
             sb.append(",");
         }
@@ -78,7 +78,7 @@ public abstract class QueueBenchmark {
 
         ExecutorService es = Executors.newFixedThreadPool(2);
         List<Future<Void>> futures = new LinkedList<>();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0;i < 2;i++) {
             Future<Void> future = es.submit(() -> {
                 publish();
                 consume();

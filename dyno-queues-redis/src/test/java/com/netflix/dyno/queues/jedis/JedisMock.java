@@ -348,7 +348,7 @@ public class JedisMock extends Jedis {
         try {
             String field = fields[0];
             String[] f = new String[fields.length - 1];
-            for (int idx = 1; idx < fields.length; ++idx) {
+            for (int idx = 1;idx < fields.length;++idx) {
                 f[idx - 1] = fields[idx];
             }
             return redis.hmget(key, field, f);
@@ -389,7 +389,7 @@ public class JedisMock extends Jedis {
         try {
             String field = fields[0];
             String[] f = new String[fields.length - 1];
-            for (int idx = 1; idx < fields.length; ++idx) {
+            for (int idx = 1;idx < fields.length;++idx) {
                 f[idx - 1] = fields[idx];
             }
             return redis.hdel(key, field, f);
@@ -439,7 +439,7 @@ public class JedisMock extends Jedis {
         try {
             String element = strings[0];
             String[] elements = new String[strings.length - 1];
-            for (int idx = 1; idx < strings.length; ++idx) {
+            for (int idx = 1;idx < strings.length;++idx) {
                 elements[idx - 1] = strings[idx];
             }
             return redis.rpush(key, element, elements);
@@ -453,7 +453,7 @@ public class JedisMock extends Jedis {
         try {
             String element = strings[0];
             String[] elements = new String[strings.length - 1];
-            for (int idx = 1; idx < strings.length; ++idx) {
+            for (int idx = 1;idx < strings.length;++idx) {
                 elements[idx - 1] = strings[idx];
             }
             return redis.lpush(key, element, elements);
@@ -548,7 +548,7 @@ public class JedisMock extends Jedis {
         try {
             String member = members[0];
             String[] m = new String[members.length - 1];
-            for (int idx = 1; idx < members.length; ++idx) {
+            for (int idx = 1;idx < members.length;++idx) {
                 m[idx - 1] = members[idx];
             }
             return redis.sadd(key, member, m);
@@ -571,7 +571,7 @@ public class JedisMock extends Jedis {
         try {
             String member = members[0];
             String[] m = new String[members.length - 1];
-            for (int idx = 1; idx < members.length; ++idx) {
+            for (int idx = 1;idx < members.length;++idx) {
                 m[idx - 1] = members[idx];
             }
             return redis.srem(key, member, m);
@@ -621,7 +621,7 @@ public class JedisMock extends Jedis {
         try {
             String key = keys[0];
             String[] k = new String[keys.length - 1];
-            for (int idx = 0; idx < keys.length; ++idx) {
+            for (int idx = 0;idx < keys.length;++idx) {
                 k[idx - 1] = keys[idx];
             }
             return redis.sinter(key, k);
@@ -635,7 +635,7 @@ public class JedisMock extends Jedis {
         try {
             String key = keys[0];
             String[] k = new String[keys.length - 1];
-            for (int idx = 0; idx < keys.length; ++idx) {
+            for (int idx = 0;idx < keys.length;++idx) {
                 k[idx - 1] = keys[idx];
             }
             return redis.sinterstore(dstkey, key, k);
@@ -649,7 +649,7 @@ public class JedisMock extends Jedis {
         try {
             String key = keys[0];
             String[] k = new String[keys.length - 1];
-            for (int idx = 0; idx < keys.length; ++idx) {
+            for (int idx = 0;idx < keys.length;++idx) {
                 k[idx - 1] = keys[idx];
             }
             return redis.sunion(key, k);
@@ -663,7 +663,7 @@ public class JedisMock extends Jedis {
         try {
             String key = keys[0];
             String[] k = new String[keys.length - 1];
-            for (int idx = 0; idx < keys.length; ++idx) {
+            for (int idx = 0;idx < keys.length;++idx) {
                 k[idx - 1] = keys[idx];
             }
             return redis.sunionstore(dstkey, key, k);
@@ -677,7 +677,7 @@ public class JedisMock extends Jedis {
         try {
             String key = keys[0];
             String[] k = new String[keys.length - 1];
-            for (int idx = 0; idx < keys.length; ++idx) {
+            for (int idx = 0;idx < keys.length;++idx) {
                 k[idx - 1] = keys[idx];
             }
             return redis.sdiff(key, k);
@@ -691,7 +691,7 @@ public class JedisMock extends Jedis {
         try {
             String key = keys[0];
             String[] k = new String[keys.length - 1];
-            for (int idx = 0; idx < keys.length; ++idx) {
+            for (int idx = 0;idx < keys.length;++idx) {
                 k[idx - 1] = keys[idx];
             }
             return redis.sdiffstore(dstkey, key, k);
@@ -782,7 +782,7 @@ public class JedisMock extends Jedis {
         try {
             String member = members[0];
             String[] ms = new String[members.length - 1];
-            for (int idx = 1; idx < members.length; ++idx) {
+            for (int idx = 1;idx < members.length;++idx) {
                 ms[idx - 1] = members[idx];
             }
             return redis.zrem(key, member, ms);

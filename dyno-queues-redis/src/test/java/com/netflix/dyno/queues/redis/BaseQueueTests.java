@@ -149,7 +149,7 @@ public abstract class BaseQueueTests {
             @Override
             public void run() {
                 List<Message> messages = new LinkedList<>();
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0;i < 10;i++) {
                     Message msg = new Message(UUID.randomUUID().toString(), "Hello World-" + i);
                     msg.setPriority(new Random().nextInt(98));
                     messages.add(msg);
@@ -164,7 +164,7 @@ public abstract class BaseQueueTests {
             }
         };
 
-        for (int p = 0; p < 3; p++) {
+        for (int p = 0;p < 3;p++) {
             ses.scheduleWithFixedDelay(publisher, 1, 1, TimeUnit.MILLISECONDS);
         }
         publishLatch.await();
@@ -182,7 +182,7 @@ public abstract class BaseQueueTests {
             popped.stream().forEach(p -> latch.countDown());
             counter.incrementAndGet();
         };
-        for (int c = 0; c < 2; c++) {
+        for (int c = 0;c < 2;c++) {
             ses.scheduleWithFixedDelay(consumer, 1, 10, TimeUnit.MILLISECONDS);
         }
         Uninterruptibles.awaitUninterruptibly(latch);
@@ -194,7 +194,7 @@ public abstract class BaseQueueTests {
         List<Message> more = rdq.pop(1, 1, TimeUnit.SECONDS);
         // If we published more than we consumed since we could've published more than we consumed in which case this
         // will not be empty
-        if(published.get() == consumed.get())
+        if (published.get() == consumed.get())
             assertEquals(0, more.size());
         else
             assertEquals(1, more.size());
@@ -230,7 +230,7 @@ public abstract class BaseQueueTests {
 
         int count = 10;
         List<Message> messages = new LinkedList<>();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0;i < count;i++) {
             Message msg = new Message("" + i, "Hello World-" + i);
             msg.setPriority(count - i);
             messages.add(msg);
@@ -297,7 +297,7 @@ public abstract class BaseQueueTests {
         rdq.clear();
         int count = 10;
         List<Message> messages = new LinkedList<>();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0;i < count;i++) {
             Message msg = new Message("x" + i, "Hello World-" + i);
             msg.setPriority(count - i);
             messages.add(msg);

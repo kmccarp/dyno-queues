@@ -198,7 +198,7 @@ public class RedisDynoQueueTest {
             @Override
             public void run() {
                 List<Message> messages = new LinkedList<>();
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0;i < 10;i++) {
                     Message msg = new Message(UUID.randomUUID().toString(), "Hello World-" + i);
                     msg.setPriority(new Random().nextInt(98));
                     messages.add(msg);
@@ -214,7 +214,7 @@ public class RedisDynoQueueTest {
             }
         };
 
-        for (int p = 0; p < 3; p++) {
+        for (int p = 0;p < 3;p++) {
             ses.scheduleWithFixedDelay(publisher, 1, 1, TimeUnit.MILLISECONDS);
         }
         publishLatch.await();
@@ -237,7 +237,7 @@ public class RedisDynoQueueTest {
             }
         };
 
-        for (int c = 0; c < 2; c++) {
+        for (int c = 0;c < 2;c++) {
             ses.scheduleWithFixedDelay(consumer, 1, 10, TimeUnit.MILLISECONDS);
         }
         Uninterruptibles.awaitUninterruptibly(latch);
@@ -285,7 +285,7 @@ public class RedisDynoQueueTest {
 
         int count = 10;
         List<Message> messages = new LinkedList<>();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0;i < count;i++) {
             Message msg = new Message("" + i, "Hello World-" + i);
             msg.setPriority(count - i);
             messages.add(msg);
@@ -367,7 +367,7 @@ public class RedisDynoQueueTest {
         rdq.clear();
         int count = 10;
         List<Message> messages = new LinkedList<>();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0;i < count;i++) {
             Message msg = new Message("x" + i, "Hello World-" + i);
             msg.setPriority(count - i);
             messages.add(msg);

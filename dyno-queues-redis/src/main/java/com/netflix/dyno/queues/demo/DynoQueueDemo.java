@@ -129,7 +129,7 @@ public class DynoQueueDemo extends DynoJedisDemo {
         List<Message> specific_pops = new ArrayList<>();
         // We'd only be able to pop from the local shard with popWithMsgId(), so try to pop the first payload ID we see in the local shard.
         // Until then pop all messages not in the local shard with unsafePopWithMsgIdAllShards().
-        for (int i = 1; i < payloads.size(); ++i) {
+        for (int i = 1;i < payloads.size();++i) {
             Message popWithMsgId = V1Queue.popWithMsgId(payloads.get(i).getId());
             if (popWithMsgId != null) {
                 specific_pops.add(popWithMsgId);

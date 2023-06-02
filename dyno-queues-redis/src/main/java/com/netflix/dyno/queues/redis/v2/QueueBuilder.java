@@ -177,7 +177,7 @@ public class QueueBuilder {
 
         boolean useDynomiteCluster = dynoQuorumClient != null;
         if (useDynomiteCluster) {
-            if(hs == null) {
+            if (hs == null) {
                 hs = dynoQuorumClient.getConnPool().getConfiguration().getHostSupplier();
             }
             this.hosts = hs.getHosts();
@@ -188,7 +188,7 @@ public class QueueBuilder {
             String az = ConfigUtils.getLocalZone();
             shardSupplier = new DynoShardSupplier(hs, region, az);
         }
-        if(currentShard == null) {
+        if (currentShard == null) {
             currentShard = shardSupplier.getCurrentShard();
         }
 
@@ -217,7 +217,7 @@ public class QueueBuilder {
 
             if (useDynomiteCluster) {
                 redisConn = new DynoClientProxy(dynoQuorumClient);
-                if(dynoNonQuorumClient == null) {
+                if (dynoNonQuorumClient == null) {
                     dynoNonQuorumClient = dynoQuorumClient;
                 }
                 redisConnRead = new DynoClientProxy(dynoNonQuorumClient);

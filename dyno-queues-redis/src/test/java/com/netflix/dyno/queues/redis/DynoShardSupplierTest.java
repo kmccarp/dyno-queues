@@ -42,47 +42,47 @@ import com.netflix.dyno.connectionpool.HostSupplier;
  */
 public class DynoShardSupplierTest {
 
-	@Test
-	public void test(){
-		HostSupplier hs = new HostSupplier() {
-			@Override
-			public List<Host> getHosts() {
-				List<Host> hosts = new LinkedList<>();
-				hosts.add(
-						new HostBuilder()
-								.setHostname("host1")
-								.setPort(8102)
-								.setRack("us-east-1a")
-								.setStatus(Host.Status.Up)
-								.createHost()
-				);
-				hosts.add(
-						new HostBuilder()
-								.setHostname("host1")
-								.setPort(8102)
-								.setRack("us-east-1b")
-								.setStatus(Host.Status.Up)
-								.createHost()
-				);
-				hosts.add(
-						new HostBuilder()
-								.setHostname("host1")
-								.setPort(8102)
-								.setRack("us-east-1d")
-								.setStatus(Host.Status.Up)
-								.createHost()
-				);
-				
-				return hosts;
-			}
-		};
-		DynoShardSupplier supplier = new DynoShardSupplier(hs, "us-east-1", "a");
-		String localShard = supplier.getCurrentShard();
-		Set<String> allShards = supplier.getQueueShards();
-		
-		assertNotNull(localShard);
-		assertEquals("a", localShard);
-		assertNotNull(allShards);
-		assertEquals(Arrays.asList("a","b","d").stream().collect(Collectors.toSet()), allShards);		
-	}
+    @Test
+    public void test() {
+        HostSupplier hs = new HostSupplier() {
+            @Override
+            public List<Host> getHosts() {
+                List<Host> hosts = new LinkedList<>();
+                hosts.add(
+                        new HostBuilder()
+                                .setHostname("host1")
+                                .setPort(8102)
+                                .setRack("us-east-1a")
+                                .setStatus(Host.Status.Up)
+                                .createHost()
+                );
+                hosts.add(
+                        new HostBuilder()
+                                .setHostname("host1")
+                                .setPort(8102)
+                                .setRack("us-east-1b")
+                                .setStatus(Host.Status.Up)
+                                .createHost()
+                );
+                hosts.add(
+                        new HostBuilder()
+                                .setHostname("host1")
+                                .setPort(8102)
+                                .setRack("us-east-1d")
+                                .setStatus(Host.Status.Up)
+                                .createHost()
+                );
+
+                return hosts;
+            }
+        };
+        DynoShardSupplier supplier = new DynoShardSupplier(hs, "us-east-1", "a");
+        String localShard = supplier.getCurrentShard();
+        Set<String> allShards = supplier.getQueueShards();
+
+        assertNotNull(localShard);
+        assertEquals("a", localShard);
+        assertNotNull(allShards);
+        assertEquals(Arrays.asList("a", "b", "d").stream().collect(Collectors.toSet()), allShards);
+    }
 }

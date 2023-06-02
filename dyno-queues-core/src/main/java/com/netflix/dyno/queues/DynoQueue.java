@@ -56,7 +56,7 @@ public interface DynoQueue extends Closeable {
      * @param wait Amount of time to wait if there are no messages in queue
      * @param unit Time unit for the wait period
      * @return messages.  Can be less than the messageCount if there are fewer messages available than the message count.
-	 *                    If the popped messages are not acknowledge in a timely manner, they are pushed back into the queue.
+     *                    If the popped messages are not acknowledge in a timely manner, they are pushed back into the queue.
      * @see #peek(int)
      * @see #ack(String)
      * @see #getUnackTime()
@@ -75,9 +75,9 @@ public interface DynoQueue extends Closeable {
 
     /**
      * Provides a peek into the queue without taking messages out.
-	 *
-	 * Note: This peeks only into the 'local' shard.
-	 *
+     *
+     * Note: This peeks only into the 'local' shard.
+     *
      * @param messageCount number of messages to be peeked.
      * @return List of peeked messages.
      * @see #pop(int, int, TimeUnit)
@@ -121,7 +121,8 @@ public interface DynoQueue extends Closeable {
      * @return true if the message id was found and removed.  False otherwise.
      */
     public boolean remove(String messageId);
-	public boolean atomicRemove(String messageId);
+
+    public boolean atomicRemove(String messageId);
 
     /**
      * Enqueues 'message' if it doesn't exist in any of the shards or unack sets.
@@ -144,24 +145,24 @@ public interface DynoQueue extends Closeable {
      * @param predicate The predicate to check against.
      * @return 'true' if any of the messages contain 'predicate'; 'false' otherwise.
      */
-	public boolean containsPredicate(String predicate);
+    public boolean containsPredicate(String predicate);
 
-	/**
-	 * Checks the message bodies (i.e. the data in the hash map), and returns true on the first match with
-	 * 'predicate'.
-	 *
-	 * Matching is done based on 'lua pattern' matching.
-	 * http://lua-users.org/wiki/PatternsTutorial
-	 *
-	 * Disclaimer: This is a potentially expensive call, since we will iterate over the entire hash map in the
-	 * worst case. Use mindfully.
-	 *
-	 * @param predicate The predicate to check against.
-	 * @param localShardOnly If this is true, it will only check if the message exists in the local shard as opposed to
-	 *                       all shards. Note that this will only work if the Dynomite cluster ring size is 1 (i.e. one
-	 *                       instance per AZ).
-	 * @return 'true' if any of the messages contain 'predicate'; 'false' otherwise.
-	 */
+    /**
+     * Checks the message bodies (i.e. the data in the hash map), and returns true on the first match with
+     * 'predicate'.
+     *
+     * Matching is done based on 'lua pattern' matching.
+     * http://lua-users.org/wiki/PatternsTutorial
+     *
+     * Disclaimer: This is a potentially expensive call, since we will iterate over the entire hash map in the
+     * worst case. Use mindfully.
+     *
+     * @param predicate The predicate to check against.
+     * @param localShardOnly If this is true, it will only check if the message exists in the local shard as opposed to
+     *                       all shards. Note that this will only work if the Dynomite cluster ring size is 1 (i.e. one
+     *                       instance per AZ).
+     * @return 'true' if any of the messages contain 'predicate'; 'false' otherwise.
+     */
     public boolean containsPredicate(String predicate, boolean localShardOnly);
 
     /**
@@ -179,36 +180,36 @@ public interface DynoQueue extends Closeable {
      */
     public String getMsgWithPredicate(String predicate);
 
-	/**
-	 * Checks the message bodies (i.e. the data in the hash map), and returns the ID of the first message to match with
-	 * 'predicate'.
-	 *
-	 * Matching is done based on 'lua pattern' matching.
-	 * http://lua-users.org/wiki/PatternsTutorial
-	 *
-	 * Disclaimer: This is a potentially expensive call, since we will iterate over the entire hash map in the
-	 * worst case. Use mindfully.
-	 *
-	 * @param predicate The predicate to check against.
-	 * @param localShardOnly If this is true, it will only check if the message exists in the local shard as opposed to
-	 *                       all shards. Note that this will only work if the Dynomite cluster ring size is 1 (i.e. one
-	 *                       instance per AZ).
-	 * @return Message ID as string if any of the messages contain 'predicate'; 'null' otherwise.
-	 */
+    /**
+     * Checks the message bodies (i.e. the data in the hash map), and returns the ID of the first message to match with
+     * 'predicate'.
+     *
+     * Matching is done based on 'lua pattern' matching.
+     * http://lua-users.org/wiki/PatternsTutorial
+     *
+     * Disclaimer: This is a potentially expensive call, since we will iterate over the entire hash map in the
+     * worst case. Use mindfully.
+     *
+     * @param predicate The predicate to check against.
+     * @param localShardOnly If this is true, it will only check if the message exists in the local shard as opposed to
+     *                       all shards. Note that this will only work if the Dynomite cluster ring size is 1 (i.e. one
+     *                       instance per AZ).
+     * @return Message ID as string if any of the messages contain 'predicate'; 'null' otherwise.
+     */
     public String getMsgWithPredicate(String predicate, boolean localShardOnly);
 
-	/**
-	 * Pops the message with the highest priority that matches 'predicate'.
-	 *
-	 * Note: Can be slow for large queues.
-	 *
-	 * @param predicate The predicate to check against.
-	 * @param localShardOnly If this is true, it will only check if the message exists in the local shard as opposed to
-	 *                       all shards. Note that this will only work if the Dynomite cluster ring size is 1 (i.e. one
-	 *                       instance per AZ).
-	 * @return
-	 */
-	public Message popMsgWithPredicate(String predicate, boolean localShardOnly);
+    /**
+     * Pops the message with the highest priority that matches 'predicate'.
+     *
+     * Note: Can be slow for large queues.
+     *
+     * @param predicate The predicate to check against.
+     * @param localShardOnly If this is true, it will only check if the message exists in the local shard as opposed to
+     *                       all shards. Note that this will only work if the Dynomite cluster ring size is 1 (i.e. one
+     *                       instance per AZ).
+     * @return
+     */
+    public Message popMsgWithPredicate(String predicate, boolean localShardOnly);
 
     /**
      *
@@ -217,25 +218,26 @@ public interface DynoQueue extends Closeable {
      */
     public Message get(String messageId);
 
-	/**
-	 *
-	 * Attempts to return all the messages found in the hashmap. It's a best-effort return of all payloads, i.e. it may
-	 * not 100% match with what's in the queue metadata at any given time and is read with a non-quorum connection.
-	 *
-	 * @return Returns a list of all messages found in the message hashmap.
-	 */
+    /**
+     *
+     * Attempts to return all the messages found in the hashmap. It's a best-effort return of all payloads, i.e. it may
+     * not 100% match with what's in the queue metadata at any given time and is read with a non-quorum connection.
+     *
+     * @return Returns a list of all messages found in the message hashmap.
+     */
     public List<Message> getAllMessages();
 
-	/**
-	 *
-	 * Same as get(), but uses the non quorum connection.
-	 * @param messageId message to be retrieved.
-	 * @return Retrieves the message stored in the queue by the messageId.  Null if not found.
-	 */
-	public Message localGet(String messageId);
+    /**
+     *
+     * Same as get(), but uses the non quorum connection.
+     * @param messageId message to be retrieved.
+     * @return Retrieves the message stored in the queue by the messageId.  Null if not found.
+     */
+    public Message localGet(String messageId);
 
     public List<Message> bulkPop(int messageCount, int wait, TimeUnit unit);
-	public List<Message> unsafeBulkPop(int messageCount, int wait, TimeUnit unit);
+
+    public List<Message> unsafeBulkPop(int messageCount, int wait, TimeUnit unit);
 
     /**
      *
@@ -260,67 +262,68 @@ public interface DynoQueue extends Closeable {
      * Process un-acknowledged messages.  The messages which are polled by the client but not ack'ed are moved back to queue
      */
     public void processUnacks();
-	public void atomicProcessUnacks();
 
-	/**
-	 *
-	 * Attempts to return the items present in the local queue shard but not in the hashmap, if any.
-	 * (Ideally, we would not require this function, however, in some configurations, especially with multi-region write
-	 * traffic sharing the same queue, we may find ourselves with stale items in the queue shards)
-	 *
-	 * @return List of stale messages IDs.
-	 */
-	public List<Message> findStaleMessages();
+    public void atomicProcessUnacks();
 
-	/*
-	 * <=== Begin unsafe* functions. ===>
-	 *
-	 *     The unsafe functions listed below are not advisable to use.
-	 *     The reason they are listed as unsafe is that they operate over all shards of a queue which means that
-	 *     due to the eventually consistent nature of Dynomite, the calling application may see duplicate item(s) that
-	 *     may have already been popped in a different rack, by another instance of the same application.
-	 *
-	 *     Why are these functions made available then?
-	 *     There are some users of dyno-queues who have use-cases that are completely okay with dealing with duplicate
-	 *     items.
-	 */
+    /**
+     *
+     * Attempts to return the items present in the local queue shard but not in the hashmap, if any.
+     * (Ideally, we would not require this function, however, in some configurations, especially with multi-region write
+     * traffic sharing the same queue, we may find ourselves with stale items in the queue shards)
+     *
+     * @return List of stale messages IDs.
+     */
+    public List<Message> findStaleMessages();
 
-	/**
-	 * Provides a peek into all shards of the queue without taking messages out.
-	 * Note: This function does not guarantee ordering of items based on shards like unsafePopAllShards().
-	 *
-	 * @param messageCount The number of messages to peek.
-	 * @return A list of up to 'count' messages.
-	 */
-	public List<Message> unsafePeekAllShards(final int messageCount);
+    /*
+     * <=== Begin unsafe* functions. ===>
+     *
+     *     The unsafe functions listed below are not advisable to use.
+     *     The reason they are listed as unsafe is that they operate over all shards of a queue which means that
+     *     due to the eventually consistent nature of Dynomite, the calling application may see duplicate item(s) that
+     *     may have already been popped in a different rack, by another instance of the same application.
+     *
+     *     Why are these functions made available then?
+     *     There are some users of dyno-queues who have use-cases that are completely okay with dealing with duplicate
+     *     items.
+     */
 
-
-	/**
-	 * Allows popping from all shards of the queue.
-	 *
-	 * Note: The local shard will always be looked into first and other shards will be filled behind it (if 'messageCount' is
-	 * greater than the number of elements in the local shard). This way we ensure the chances of duplicates are less.
-	 *
-	 * @param messageCount number of messages to be popped out of the queue.
-	 * @param wait Amount of time to wait for each shard if there are no messages in shard.
-	 * @param unit Time unit for the wait period
-	 * @return messages. Can be less than the messageCount if there are fewer messages available than the message count.
-	 * 					 If the popped messages are not acknowledge in a timely manner, they are pushed back into
-	 * 					 the queue.
-	 * @see #peek(int)
-	 * @see #ack(String)
-	 * @see #getUnackTime()
-	 *
-	 */
-	public List<Message> unsafePopAllShards(int messageCount, int wait, TimeUnit unit);
+    /**
+     * Provides a peek into all shards of the queue without taking messages out.
+     * Note: This function does not guarantee ordering of items based on shards like unsafePopAllShards().
+     *
+     * @param messageCount The number of messages to peek.
+     * @return A list of up to 'count' messages.
+     */
+    public List<Message> unsafePeekAllShards(final int messageCount);
 
 
-	/**
-	 * Same as popWithMsgId(), but allows popping from any shard.
-	 *
-	 * @param messageId ID of message to pop
-	 * @return Returns a "Message" object if pop was successful. 'null' otherwise.
-	 */
-	public Message unsafePopWithMsgIdAllShards(String messageId);
+    /**
+     * Allows popping from all shards of the queue.
+     *
+     * Note: The local shard will always be looked into first and other shards will be filled behind it (if 'messageCount' is
+     * greater than the number of elements in the local shard). This way we ensure the chances of duplicates are less.
+     *
+     * @param messageCount number of messages to be popped out of the queue.
+     * @param wait Amount of time to wait for each shard if there are no messages in shard.
+     * @param unit Time unit for the wait period
+     * @return messages. Can be less than the messageCount if there are fewer messages available than the message count.
+     * 					 If the popped messages are not acknowledge in a timely manner, they are pushed back into
+     * 					 the queue.
+     * @see #peek(int)
+     * @see #ack(String)
+     * @see #getUnackTime()
+     *
+     */
+    public List<Message> unsafePopAllShards(int messageCount, int wait, TimeUnit unit);
+
+
+    /**
+     * Same as popWithMsgId(), but allows popping from any shard.
+     *
+     * @param messageId ID of message to pop
+     * @return Returns a "Message" object if pop was successful. 'null' otherwise.
+     */
+    public Message unsafePopWithMsgIdAllShards(String messageId);
 
 }

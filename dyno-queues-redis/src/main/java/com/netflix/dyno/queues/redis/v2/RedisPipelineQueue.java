@@ -268,7 +268,7 @@ public class RedisPipelineQueue implements DynoQueue {
             Pipe pipe = jedis.pipelined();
             List<Response<Long>> zadds = new ArrayList<>(batch.size());
 
-            for (int i = 0; i < batch.size(); i++) {
+            for (int i = 0;i < batch.size();i++) {
                 String msgId = batch.get(i);
                 if (msgId == null) {
                     break;
@@ -282,7 +282,7 @@ public class RedisPipelineQueue implements DynoQueue {
             List<String> zremIds = new ArrayList<>(count);
             List<Response<Long>> zremRes = new LinkedList<>();
 
-            for (int i = 0; i < count; i++) {
+            for (int i = 0;i < count;i++) {
                 long added = zadds.get(i).get();
                 if (added == 0) {
                     if (logger.isDebugEnabled()) {
@@ -299,7 +299,7 @@ public class RedisPipelineQueue implements DynoQueue {
 
             pipe = jedis.pipelined();
             List<Response<String>> getRes = new ArrayList<>(count);
-            for (int i = 0; i < zremRes.size(); i++) {
+            for (int i = 0;i < zremRes.size();i++) {
                 long removed = zremRes.get(i).get();
                 if (removed == 0) {
                     if (logger.isDebugEnabled()) {
@@ -312,7 +312,7 @@ public class RedisPipelineQueue implements DynoQueue {
             }
             pipe.sync();
 
-            for (int i = 0; i < getRes.size(); i++) {
+            for (int i = 0;i < getRes.size();i++) {
                 String json = getRes.get(i).get();
                 if (json == null) {
                     if (logger.isDebugEnabled()) {
@@ -368,7 +368,7 @@ public class RedisPipelineQueue implements DynoQueue {
             pipe = jedis.pipelined();
 
             List<Response<Long>> dels = new LinkedList<>();
-            for (int i = 0; i < messages.size(); i++) {
+            for (int i = 0;i < messages.size();i++) {
                 Long removed = responses.get(i).get();
                 if (removed > 0) {
                     dels.add(pipe.hdel(messageStoreKey(messages.get(i).getId()), messages.get(i).getId()));
@@ -563,7 +563,7 @@ public class RedisPipelineQueue implements DynoQueue {
 
             long size = jedis.zcard(myQueueShard);
             long uacked = 0;
-            for (int i = 0; i < maxHashBuckets; i++) {
+            for (int i = 0;i < maxHashBuckets;i++) {
                 String unackShardKey = unackShardKeyPrefix + i;
                 uacked += jedis.zcard(unackShardKey);
             }
@@ -588,7 +588,7 @@ public class RedisPipelineQueue implements DynoQueue {
 
             jedis.del(myQueueShard);
 
-            for (int bucket = 0; bucket < maxHashBuckets; bucket++) {
+            for (int bucket = 0;bucket < maxHashBuckets;bucket++) {
                 String unackShardKey = unackShardKeyPrefix + bucket;
                 jedis.del(unackShardKey);
 
@@ -614,7 +614,7 @@ public class RedisPipelineQueue implements DynoQueue {
     }
 
     public void processUnacks() {
-        for (int i = 0; i < maxHashBuckets; i++) {
+        for (int i = 0;i < maxHashBuckets;i++) {
             String unackShardKey = unackShardKeyPrefix + i;
             processUnacks(unackShardKey);
         }
@@ -690,7 +690,9 @@ public class RedisPipelineQueue implements DynoQueue {
     }
 
     @Override
-    public List<Message> findStaleMessages() { throw new UnsupportedOperationException(); }
+    public List<Message> findStaleMessages() {
+        throw new UnsupportedOperationException();
+    }
 
     @Override
     public boolean atomicRemove(String messageId) {

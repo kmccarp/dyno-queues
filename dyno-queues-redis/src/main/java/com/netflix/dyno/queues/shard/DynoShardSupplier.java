@@ -42,7 +42,7 @@ public class DynoShardSupplier implements ShardSupplier {
 
     private String localRack;
 
-    private Function<String, String> rackToShardMap = rack -> rack.substring(rack.length()-1);
+    private Function<String, String> rackToShardMap = rack -> rack.substring(rack.length() - 1);
 
     /**
      * Dynomite based shard supplier.  Keeps the number of shards in parity with the hosts and regions

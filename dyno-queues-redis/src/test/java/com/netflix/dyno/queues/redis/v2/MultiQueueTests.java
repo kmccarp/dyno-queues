@@ -102,7 +102,7 @@ public class MultiQueueTests {
         assertTrue(elapsedTime > 1000);
 
         List<Message> messages = new LinkedList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0;i < 10;i++) {
             Message msg = new Message();
             msg.setId("" + i);
             msg.setPayload("" + i);

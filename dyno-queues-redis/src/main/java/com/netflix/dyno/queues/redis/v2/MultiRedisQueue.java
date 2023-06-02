@@ -71,7 +71,7 @@ public class MultiRedisQueue implements DynoQueue {
         int partitionSize = messages.size() / size;
         List<String> ids = new LinkedList<>();
 
-        for (int i = 0; i < size - 1; i++) {
+        for (int i = 0;i < size - 1;i++) {
             RedisPipelineQueue queue = queues.get(getNextShard());
             int start = i * partitionSize;
             int end = start + partitionSize;
@@ -260,7 +260,9 @@ public class MultiRedisQueue implements DynoQueue {
     }
 
     @Override
-    public List<Message> findStaleMessages() { throw new UnsupportedOperationException(); }
+    public List<Message> findStaleMessages() {
+        throw new UnsupportedOperationException();
+    }
 
     @Override
     public boolean atomicRemove(String messageId) {
