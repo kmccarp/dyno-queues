@@ -105,7 +105,7 @@ public class RedisPipelineQueue implements DynoQueue {
 
         schedulerForUnacksProcessing = Executors.newScheduledThreadPool(1);
 
-        schedulerForUnacksProcessing.scheduleAtFixedRate(() -> processUnacks(), unackScheduleInMS, unackScheduleInMS, TimeUnit.MILLISECONDS);
+        schedulerForUnacksProcessing.scheduleAtFixedRate(this::processUnacks, unackScheduleInMS, unackScheduleInMS, TimeUnit.MILLISECONDS);
 
         logger.info(RedisPipelineQueue.class.getName() + " is ready to serve " + qName + ", shard=" + shardName);
 
@@ -147,7 +147,7 @@ public class RedisPipelineQueue implements DynoQueue {
             pipe.sync();
             pipe.close();
 
-            return messages.stream().map(msg -> msg.getId()).collect(Collectors.toList());
+            return messages.stream().map(Message::getId).collect(Collectors.toList());
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -182,7 +182,7 @@ public class RedisPipelineQueue implements DynoQueue {
                 return Collections.emptyList();
             }
 
-            List<Message> messages = new LinkedList<Message>();
+            List<Message> messages = new LinkedList<>();
             for (String id : ids) {
                 String json = jedis.hget(messageStoreKey(id), id);
                 Message message = om.readValue(json, Message.class);
@@ -521,9 +521,7 @@ public class RedisPipelineQueue implements DynoQueue {
                 }
                 return null;
             }
-
-            Message msg = om.readValue(json, Message.class);
-            return msg;
+            return om.readValue(json, Message.class);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -545,8 +543,7 @@ public class RedisPipelineQueue implements DynoQueue {
         RedisConnection jedis = nonQuorumPool.getResource();
 
         try {
-            long size = jedis.zcard(myQueueShard);
-            return size;
+            return jedis.zcard(myQueueShard);
         } finally {
             jedis.close();
             sw.stop();
@@ -606,8 +603,7 @@ public class RedisPipelineQueue implements DynoQueue {
         RedisConnection jedis = connPool.getResource();
         try {
             double now = Long.valueOf(clock.millis() + 1).doubleValue();
-            Set<String> scanned = jedis.zrangeByScore(myQueueShard, 0, now, offset, count);
-            return scanned;
+            return jedis.zrangeByScore(myQueueShard, 0, now, offset, count);
         } finally {
             jedis.close();
         }
@@ -638,7 +634,7 @@ public class RedisPipelineQueue implements DynoQueue {
 
                 Set<Tuple> unacks = jedis2.zrangeByScoreWithScores(unackShardKey, 0, now, 0, batchSize);
 
-                if (unacks.size() > 0) {
+                if (!unacks.isEmpty()) {
                     logger.debug("Adding " + unacks.size() + " messages back to the queue for " + queueName);
                 } else {
                     //Nothing more to be processed
