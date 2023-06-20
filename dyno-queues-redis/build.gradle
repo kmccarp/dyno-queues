@@ -11,7 +11,7 @@ dependencies {
     compile 'com.netflix.archaius:archaius-core:0.7.5'
     compile 'com.netflix.servo:servo-core:0.12.17'
     compile 'com.netflix.eureka:eureka-client:1.8.1'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.4.4'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.11.5'
     
     testCompile 'org.rarefiedredis.redis:redis-java:0.0.17'
     testCompile "junit:junit:4.11"    
